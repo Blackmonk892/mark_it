@@ -2,6 +2,7 @@ import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import { app, BrowserWindow, ipcMain, shell } from 'electron'
 import { join } from 'path'
 import icon from '../../resources/icon.png?asset'
+import { dbOperations } from './lib/db'
 
 function createWindow(): void {
   // Create the browser window.
@@ -55,6 +56,22 @@ app.whenReady().then(() => {
   })
 
   // IPC test
+  ipcMain.handle('db:get-all-notes', async () => {
+    return dbOperations.getAllNotes()
+  })
+
+  ipcMain.handle(`db:save-note`, async (_, note) => {
+    return dbOperations.saveNote(note)
+  })
+
+  ipcMain.handle(`db:update-note`, async (_, id, title, content) => {
+    return dbOperations.updateNote(id, title, content)
+  })
+
+  ipcMain.handle('db:delete-note', async (_, id) => {
+    return dbOperations.deleteNote(id)
+  })
+
   ipcMain.on('ping', () => console.log('pong'))
 
   createWindow()
