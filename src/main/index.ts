@@ -9,6 +9,10 @@ function createWindow(): void {
     width: 900,
     height: 670,
     show: false,
+    frame: false,
+    transparent: true,
+    vibrancy: 'sidebar',
+    backgroundMaterial: 'acrylic',
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
@@ -73,3 +77,13 @@ app.on('window-all-closed', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+
+try {
+  require('electron-reload')(__dirname, {
+    electron: require('electron') // <-- load from root node_modules
+  })
+} catch (err) {
+  console.log('Auto-reload disabled:', err)
+}
+
+console.log('MAIN STARTED')

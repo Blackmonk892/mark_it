@@ -1,6 +1,8 @@
-
 declare global {
   interface Window {
-    context: {}
+    context: {
+      locale: string
+      platform: 'win32' | 'darwin' | 'linux'
+    }
   }
 }

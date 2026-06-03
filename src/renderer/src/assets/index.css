@@ -4,27 +4,23 @@
 
 @layer base {
   #root {
-    @apply h-full;
+    @apply h-full flex flex-col;
   }
 
   html,
   body {
-    @apply h-full;
-
-    @apply select-none;
-
-    @apply bg-transparent;
-
-    @apply font-mono antialiased text-white;
-
-    @apply overflow-hidden;
+    @apply h-full select-none overflow-hidden antialiased;
+    /* Milky white frosted base - semi-transparent to catch OS blur */
+    @apply bg-white/70 text-slate-800;
   }
 
-  header {
+  /* Defines the draggable area for our custom titlebar */
+  .titlebar {
     -webkit-app-region: drag;
   }
 
-  button {
+  /* Ensures buttons inside the titlebar remain clickable */
+  .titlebar button {
     -webkit-app-region: no-drag;
   }
 
@@ -33,7 +29,7 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-[#555] rounded-md;
+    @apply bg-slate-300 rounded-md;
   }
 
   ::-webkit-scrollbar-track {
