@@ -5,7 +5,7 @@ if (!process.contextIsolated) {
 }
 
 try {
-  contextBridge.exposeInMainWorld('api', {
+  contextBridge.exposeInMainWorld('context', {
     locale: navigator.language,
     platform: process.platform,
 
