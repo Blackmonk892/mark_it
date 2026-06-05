@@ -7,7 +7,7 @@ export function Sidebar() {
   const { notes, activeNote, setActiveNote, createEmptyNote, deleteExistingNote } = useNotes()
 
   return (
-    <aside className="flex h-full w-[280px] flex-col border-r border-white/30 bg-white/30 backdrop-blur-sm">
+    <aside className="flex h-full w-[280px] shrink-0 flex-col border-r border-white/30 bg-white/30 backdrop-blur-sm">
       <div className="flex items-center justify-between p-4">
         <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500">Your Notes</h2>
 

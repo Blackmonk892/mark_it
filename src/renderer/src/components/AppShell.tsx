@@ -11,7 +11,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <Sidebar />
 
         {/* Main Editor Area */}
-        <main className="flex-1 relative bg-white/10 backdrop-blur-md">{children}</main>
+        <main className="flex-1 min-w-0 relative bg-white/10 backdrop-blur-md">{children}</main>
       </div>
     </div>
   )

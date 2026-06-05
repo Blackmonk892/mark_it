@@ -1,7 +1,7 @@
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import { app, BrowserWindow, ipcMain, shell } from 'electron'
 import { join } from 'path'
-import icon from '../../resources/icon.png?asset'
+
 import { dbOperations } from './lib/db'
 
 function createWindow(): void {
@@ -9,13 +9,13 @@ function createWindow(): void {
   const mainWindow = new BrowserWindow({
     width: 900,
     height: 670,
+    icon: join(process.cwd(), 'resources', 'logo.ico'),
     show: false,
     frame: false,
     transparent: true,
     vibrancy: 'sidebar',
     backgroundMaterial: 'acrylic',
     autoHideMenuBar: true,
-    ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: true,
