@@ -17,7 +17,11 @@ try {
     updateNote: (id: number, title: string, content: string) =>
       ipcRenderer.invoke('db:update-note', id, title, content),
 
-    deleteNote: (id: number) => ipcRenderer.invoke('db:delete-note', id)
+    deleteNote: (id: number) => ipcRenderer.invoke('db:delete-note', id),
+
+    minimizeWindow: () => ipcRenderer.send('window:minimize'),
+    maximizeWindow: () => ipcRenderer.send('window:maximize'),
+    closeWindow: () => ipcRenderer.send('window:close')
   })
 } catch (error) {
   console.error('Failed to expose preload APIs:', error)

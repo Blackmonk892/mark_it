@@ -1,6 +1,7 @@
 import { FiPlus, FiTrash2 } from 'react-icons/fi'
 import { useNotes } from '../hooks/useNotes'
 import { cn, formatDateFromMs } from '../utils'
+import { extractPreview, parseBlocks } from '../utils/blocknote'
 
 export function Sidebar() {
   const { notes, activeNote, setActiveNote, createEmptyNote, deleteExistingNote } = useNotes()
@@ -53,7 +54,7 @@ export function Sidebar() {
 
               <div className="flex items-center justify-between">
                 <span className="truncate text-xs text-slate-400">
-                  {note.content || 'No content...'}
+                  {extractPreview(parseBlocks(note.content) ?? [])}
                 </span>
                 <span className="whitespace-nowrap text-[10px] font-medium text-slate-400">
                   {formatDateFromMs(note.updatedAt * 1000)}

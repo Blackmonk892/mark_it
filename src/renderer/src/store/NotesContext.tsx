@@ -58,7 +58,7 @@ export function NotesProvider({ children }: { children: React.ReactNode }) {
     try {
       await window.context.saveNote({
         title: 'Untitled Note',
-        content: ''
+        content: '[]'
       })
 
       await loadNotes()

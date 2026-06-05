@@ -15,6 +15,10 @@ declare global {
       saveNote: (note: Omit<Note, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>
       updateNote: (id: number, title: string, content: string) => Promise<void>
       deleteNote: (id: number) => Promise<void>
+
+      minimizeWindow: () => void
+      maximizeWindow: () => void
+      closeWindow: () => void
     }
   }
 }
