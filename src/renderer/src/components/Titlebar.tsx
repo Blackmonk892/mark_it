@@ -1,4 +1,4 @@
-import appIcon from './assets/image.png'
+import appIcon from '../assets/image.png'
 
 export function Titlebar() {
   return (
