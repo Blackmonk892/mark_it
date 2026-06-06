@@ -79,7 +79,11 @@ export function NotesProvider({ children }: { children: React.ReactNode }) {
 
     setActiveNoteState(updatedNote)
     activeNoteRef.current = updatedNote
-    setNotes((prevNotes) => prevNotes.map((n) => (n.id === activeNote.id ? updatedNote : n)))
+    setNotes((prevNotes) =>
+      [...prevNotes.map((n) => (n.id === activeNote.id ? updatedNote : n))].sort(
+        (a, b) => b.updatedAt - a.updatedAt
+      )
+    )
 
     if (debounceTimer.current) clearTimeout(debounceTimer.current)
     // setTimeout in renderer returns a number

@@ -36,7 +36,11 @@ export function extractTitle(document: any[]): string {
 }
 
 export function extractPreview(document: any[]): string {
-  for (const block of document) {
+  if (!document?.length) {
+    return 'No Content...'
+  }
+
+  for (const block of document.slice(1)) {
     if (!block?.content) continue
 
     const text = block.content

@@ -53,8 +53,10 @@ export function Sidebar() {
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="truncate text-xs text-slate-400">
-                  {extractPreview(parseBlocks(note.content) ?? [])}
+                <span className="truncate text-xs text-slate-400 max-w-[180px]">
+                  {note.content && note.content !== '[]'
+                    ? extractPreview(parseBlocks(note.content) ?? [])
+                    : 'Empty note...'}
                 </span>
                 <span className="whitespace-nowrap text-[10px] font-medium text-slate-400">
                   {formatDateFromMs(note.updatedAt * 1000)}
