@@ -1,3 +1,4 @@
+export * from './ActivityBar'
 export * from './AppShell'
 export * from './Editor'
 export * from './Sidebar'

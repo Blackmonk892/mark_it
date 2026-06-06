@@ -1,10 +1,14 @@
 import React, { createContext, useEffect, useRef, useState } from 'react'
 
+export type ActiveModule = 'notes' | 'media'
+
 export interface NotesContextType {
   notes: Note[]
   activeNote: Note | null
+  activeModule: ActiveModule
   isLoading: boolean
   setActiveNote: (note: Note | null) => void
+  setActiveModule: (module: ActiveModule) => void
   loadNotes: () => Promise<void>
   createEmptyNote: () => Promise<void>
   updateNoteContent: (title: string, content: string) => void
@@ -16,6 +20,7 @@ export const NotesContext = createContext<NotesContextType | undefined>(undefine
 export function NotesProvider({ children }: { children: React.ReactNode }) {
   const [notes, setNotes] = React.useState<Note[]>([])
   const [activeNote, setActiveNoteState] = useState<Note | null>(null)
+  const [activeModule, setActiveModule] = useState<ActiveModule>('notes')
   const [isLoading, setIsLoading] = useState(true)
   const activeNoteRef = useRef<Note | null>(null)
 
@@ -114,8 +119,10 @@ export function NotesProvider({ children }: { children: React.ReactNode }) {
       value={{
         notes,
         activeNote,
+        activeModule,
         isLoading,
         setActiveNote,
+        setActiveModule,
         loadNotes,
         createEmptyNote,
         updateNoteContent,
