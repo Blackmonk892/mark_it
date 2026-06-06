@@ -1,5 +1,6 @@
 export * from './ActivityBar'
 export * from './AppShell'
 export * from './Editor'
+export * from './media/MediaPlayer'
 export * from './Sidebar'
 export * from './Titlebar'

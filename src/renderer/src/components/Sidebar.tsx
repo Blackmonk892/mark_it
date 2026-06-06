@@ -3,23 +3,14 @@ import { useNotes } from '../hooks/useNotes'
 import { cn, formatDateFromMs } from '../utils'
 import { extractPreview, parseBlocks } from '../utils/blocknote'
 
+import { MediaSidebar } from './media/MediaSidebar'
+
 export function Sidebar() {
   const { notes, activeNote, activeModule, setActiveNote, createEmptyNote, deleteExistingNote } =
     useNotes()
 
   if (activeModule === 'media') {
-    return (
-      <aside className="flex h-full w-[280px] shrink-0 flex-col border-r border-white/30 bg-white/25 backdrop-blur-md">
-        <div className="flex flex-1 items-center justify-center p-6">
-          <div className="rounded-3xl border border-white/30 bg-white/30 px-6 py-8 text-center shadow-2xl shadow-slate-900/5 backdrop-blur-md">
-            <p className="text-lg font-semibold text-slate-800">Media Library &amp; Search</p>
-            <p className="mt-2 text-sm text-slate-500">
-              A dedicated media workspace will live here.
-            </p>
-          </div>
-        </div>
-      </aside>
-    )
+    return <MediaSidebar />
   }
 
   return (

@@ -6,37 +6,47 @@
 ├── electron-builder.yml
 ├── electron.vite.config.ts
 ├── eslint.config.mjs
+├── file-structure.txt
 ├── package-lock.json
 ├── package.json
 ├── PLAN.md
 ├── postcss.config.js
 ├── README.md
 ├── resources
-  └── icon.png
 ├── src
   ├── main
     ├── index.ts
     └── lib
+      └── db.ts
   ├── preload
     ├── index.d.ts
     └── index.ts
-  ├── renderer
+  └── renderer
     ├── index.html
     └── src
       ├── App.tsx
       ├── assets
-        ├── electron.svg
-        ├── index.css
-        └── wavy-lines.svg
+        ├── image.png
+        └── index.css
       ├── components
-        └── index.ts
+        ├── ActivityBar.tsx
+        ├── AppShell.tsx
+        ├── Editor.tsx
+        ├── index.ts
+        ├── media
+          └── MediaSidebar.tsx
+        ├── Sidebar.tsx
+        └── Titlebar.tsx
       ├── env.d.ts
       ├── hooks
+        └── useNotes.ts
       ├── main.tsx
       ├── store
+        ├── MediaContext.tsx
+        └── NotesContext.tsx
       └── utils
+        ├── blocknote.ts
         └── index.ts
-  └── shared
 ├── tailwind.config.js
 ├── tsconfig.json
 ├── tsconfig.node.json

@@ -1,6 +1,9 @@
+// src/main/index.ts
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
-import { app, BrowserWindow, ipcMain, shell } from 'electron'
+import { app, BrowserWindow, dialog, ipcMain, net, protocol, shell } from 'electron'
+import fs from 'fs/promises'
 import { join } from 'path'
+import { pathToFileURL } from 'url'
 
 import { dbOperations } from './lib/db'
 
@@ -70,7 +73,7 @@ app.whenReady().then(() => {
     BrowserWindow.fromWebContents(e.sender)?.close()
   })
 
-  // IPC test
+  // --- DATABASE IPC HANDLERS ---
   ipcMain.handle('db:get-all-notes', async () => {
     return dbOperations.getAllNotes()
   })
@@ -87,6 +90,62 @@ app.whenReady().then(() => {
     return dbOperations.deleteNote(id)
   })
 
+  // --- BULLETPROOF OS PROTOCOL ---
+  protocol.handle('local', (request) => {
+    // Extract the heavily encoded path from the URL
+    const encodedPath = request.url.slice('local://'.length)
+
+    // Decode it back to a normal Windows path (e.g. C:\Users\...)
+    const decodedPath = decodeURIComponent(encodedPath)
+
+    // Convert it to a safe standard file:// URL so Chromium can play it
+    return net.fetch(pathToFileURL(decodedPath).toString())
+  })
+
+  // --- LOCAL MEDIA SCANNER IPC ---
+  ipcMain.handle('media:select-folder', async () => {
+    const { canceled, filePaths } = await dialog.showOpenDialog({
+      properties: ['openDirectory']
+    })
+
+    if (canceled || filePaths.length === 0) return []
+
+    const folderPath = filePaths[0]
+
+    try {
+      const files = await fs.readdir(folderPath)
+
+      const localMedia = files
+        .filter(
+          (file) =>
+            file.endsWith('.mp3') ||
+            file.endsWith('.m4a') ||
+            file.endsWith('.mp4') ||
+            file.endsWith('.mkv')
+        )
+        .map((file) => {
+          const fullPath = join(folderPath, file)
+
+          return {
+            trackId: file,
+            trackName: file.replace(/\.[^/.]+$/, ''),
+            artistName: 'Local File',
+            // Safely encode the entire path so the browser doesn't destroy the C: drive letter
+            previewUrl: `local://${encodeURIComponent(fullPath)}`,
+            artworkUrl100: '',
+            kind: file.endsWith('.mp4') || file.endsWith('.mkv') ? 'video' : 'song',
+            isLocal: true
+          }
+        })
+
+      return localMedia
+    } catch (err) {
+      console.error('Failed to read directory:', err)
+      return []
+    }
+  })
+
+  // IPC test
   ipcMain.on('ping', () => console.log('pong'))
 
   createWindow()

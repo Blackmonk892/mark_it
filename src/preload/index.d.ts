@@ -19,6 +19,7 @@ declare global {
       minimizeWindow: () => void
       maximizeWindow: () => void
       closeWindow: () => void
+      selectLocalMediaFolder: () => Promise<any[]>
     }
   }
 }

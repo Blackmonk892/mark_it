@@ -21,7 +21,10 @@ try {
 
     minimizeWindow: () => ipcRenderer.send('window:minimize'),
     maximizeWindow: () => ipcRenderer.send('window:maximize'),
-    closeWindow: () => ipcRenderer.send('window:close')
+    closeWindow: () => ipcRenderer.send('window:close'),
+
+    //media actions
+    selectLocalMediaFolder: () => ipcRenderer.invoke('media:select-folder')
   })
 } catch (error) {
   console.error('Failed to expose preload APIs:', error)
