@@ -24,7 +24,9 @@ try {
     closeWindow: () => ipcRenderer.send('window:close'),
 
     //media actions
-    selectLocalMediaFolder: () => ipcRenderer.invoke('media:select-folder')
+    selectLocalMediaFolder: () => ipcRenderer.invoke('media:select-folder'),
+
+    searchOnlineMedia: (query: string) => ipcRenderer.invoke('media:search-online', query)
   })
 } catch (error) {
   console.error('Failed to expose preload APIs:', error)

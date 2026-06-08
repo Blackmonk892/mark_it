@@ -3,6 +3,61 @@ import { FiFolderPlus, FiHardDrive, FiMusic, FiSearch, FiVideo } from 'react-ico
 import { MediaTrack, useMedia } from '../../store/MediaContext'
 import { cn } from '../../utils'
 
+// FIX: TrackItem is now defined OUTSIDE the parent component
+const TrackItem = ({
+  track,
+  currentTrack,
+  playTrack
+}: {
+  track: MediaTrack
+  currentTrack: MediaTrack | null
+  playTrack: (track: MediaTrack) => void
+}) => {
+  const isVideo = track.kind ? track.kind.includes('video') || track.kind.includes('movie') : false
+
+  return (
+    <div
+      onClick={() => playTrack(track)}
+      className={cn(
+        'group flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-all',
+        currentTrack?.trackId === track.trackId
+          ? 'bg-white/80 shadow-sm border border-slate-200/50'
+          : 'hover:bg-white/50 border border-transparent'
+      )}
+    >
+      {track.artworkUrl100 ? (
+        <img
+          src={track.artworkUrl100}
+          alt="art"
+          className="h-10 w-10 rounded-md object-cover shadow-sm"
+        />
+      ) : (
+        <div className="h-10 w-10 rounded-md bg-slate-200 flex items-center justify-center shadow-sm">
+          {isVideo ? (
+            <FiVideo className="text-slate-400" />
+          ) : (
+            <FiMusic className="text-slate-400" />
+          )}
+        </div>
+      )}
+
+      <div className="flex flex-col overflow-hidden">
+        <span className="truncate text-sm font-semibold text-slate-800">{track.trackName}</span>
+        <span className="truncate text-[10px] text-slate-500 flex items-center gap-1 font-medium">
+          {track.isLocal ? (
+            <FiHardDrive className="h-3 w-3 text-blue-400" />
+          ) : isVideo ? (
+            <FiVideo className="h-3 w-3 text-rose-400" />
+          ) : (
+            <FiMusic className="h-3 w-3 text-purple-400" />
+          )}
+          {track.artistName}
+        </span>
+      </div>
+    </div>
+  )
+}
+
 export function MediaSidebar() {
   const [query, setQuery] = useState('')
   const {
@@ -18,62 +73,6 @@ export function MediaSidebar() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     searchMedia(query)
-  }
-
-  // Extracted Component: Safe rendering
-  const TrackItem = ({
-    track,
-    currentTrack,
-    playTrack
-  }: {
-    track: MediaTrack
-    currentTrack: MediaTrack | null
-    playTrack: (track: MediaTrack) => void
-  }) => {
-    const isVideo = track.kind
-      ? track.kind.includes('video') || track.kind.includes('movie')
-      : false
-    return (
-      <div
-        onClick={() => playTrack(track)}
-        className={cn(
-          'group flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-all',
-          currentTrack?.trackId === track.trackId
-            ? 'bg-white/80 shadow-sm border border-slate-200/50'
-            : 'hover:bg-white/50 border border-transparent'
-        )}
-      >
-        {track.artworkUrl100 ? (
-          <img
-            src={track.artworkUrl100}
-            alt="art"
-            className="h-10 w-10 rounded-md object-cover shadow-sm"
-          />
-        ) : (
-          <div className="h-10 w-10 rounded-md bg-slate-200 flex items-center justify-center shadow-sm">
-            {isVideo ? (
-              <FiVideo className="text-slate-400" />
-            ) : (
-              <FiMusic className="text-slate-400" />
-            )}
-          </div>
-        )}
-
-        <div className="flex flex-col overflow-hidden">
-          <span className="truncate text-sm font-semibold text-slate-800">{track.trackName}</span>
-          <span className="truncate text-[10px] text-slate-500 flex items-center gap-1 font-medium">
-            {track.isLocal ? (
-              <FiHardDrive className="h-3 w-3 text-blue-400" />
-            ) : isVideo ? (
-              <FiVideo className="h-3 w-3 text-rose-400" />
-            ) : (
-              <FiMusic className="h-3 w-3 text-purple-400" />
-            )}
-            {track.artistName}
-          </span>
-        </div>
-      </div>
-    )
   }
 
   return (
@@ -115,9 +114,13 @@ export function MediaSidebar() {
               Local Library
             </h3>
             <div className="space-y-1">
-              {/* FIX 1: Pass the key correctly to the TrackItem component instance */}
               {localLibrary.map((track) => (
-                <TrackItem key={track.trackId} track={track} currentTrack={currentTrack} playTrack={playTrack} />
+                <TrackItem
+                  key={track.trackId}
+                  track={track}
+                  currentTrack={currentTrack}
+                  playTrack={playTrack}
+                />
               ))}
             </div>
           </div>
@@ -138,9 +141,13 @@ export function MediaSidebar() {
               </div>
             ) : (
               <div className="space-y-1">
-                {/* FIX 1: Pass the key correctly to the TrackItem component instance */}
                 {searchResults.map((track) => (
-                  <TrackItem key={track.trackId} track={track} currentTrack={currentTrack} playTrack={playTrack} />
+                  <TrackItem
+                    key={track.trackId}
+                    track={track}
+                    currentTrack={currentTrack}
+                    playTrack={playTrack}
+                  />
                 ))}
               </div>
             )}

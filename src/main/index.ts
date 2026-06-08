@@ -1,6 +1,6 @@
 // src/main/index.ts
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
-import { app, BrowserWindow, dialog, ipcMain, protocol, shell } from 'electron'
+import { app, BrowserWindow, dialog, ipcMain, net, protocol, shell } from 'electron'
 import fs from 'fs/promises'
 import { join } from 'path'
 
@@ -224,6 +224,25 @@ app.whenReady().then(() => {
       return localMedia
     } catch (err) {
       console.error('Failed to read directory:', err)
+      return []
+    }
+  })
+
+  // --- ONLINE MEDIA SEARCH IPC ---
+  ipcMain.handle('media:search-online', async (_, query: string) => {
+    try {
+      const response = await net.fetch(
+        `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&limit=15&media=all`
+      )
+
+      if (!response.ok) {
+        throw new Error(`iTunes API responded with status: ${response.status}`)
+      }
+
+      const data = await response.json()
+      return data.results || []
+    } catch (err) {
+      console.error('Main process online search error:', err)
       return []
     }
   })

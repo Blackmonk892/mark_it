@@ -35,14 +35,15 @@ export function MediaProvider({ children }: { children: React.ReactNode }) {
     }
     setIsSearching(true)
     try {
-      const response = await fetch(
-        `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&limit=15&media=all`
-      )
-      const data = await response.json()
-      const playableTracks = data.results.filter((item: any) => item.previewUrl)
+      // Use the main process bridge to completely bypass renderer sandbox blocks
+      const results = await window.context.searchOnlineMedia(query)
+
+      // Filter items to ensure they contain playable stream links
+      const playableTracks = results.filter((item: any) => item.previewUrl)
       setSearchResults(playableTracks)
     } catch (error) {
-      console.error('Search failed:', error)
+      console.error('Renderer search failed:', error)
+      setSearchResults([])
     } finally {
       setIsSearching(false)
     }

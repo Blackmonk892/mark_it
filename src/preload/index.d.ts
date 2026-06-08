@@ -20,6 +20,7 @@ declare global {
       maximizeWindow: () => void
       closeWindow: () => void
       selectLocalMediaFolder: () => Promise<any[]>
+      searchOnlineMedia: (query: string) => Promise<any[]>
     }
   }
 }
