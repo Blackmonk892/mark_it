@@ -1,9 +1,8 @@
 // src/main/index.ts
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
-import { app, BrowserWindow, dialog, ipcMain, net, protocol, shell } from 'electron'
+import { app, BrowserWindow, dialog, ipcMain, protocol, shell } from 'electron'
 import fs from 'fs/promises'
 import { join } from 'path'
-import { pathToFileURL } from 'url'
 
 import { dbOperations } from './lib/db'
 
@@ -104,29 +103,85 @@ app.whenReady().then(() => {
   })
 
   // --- BULLETPROOF OS PROTOCOL ---
-  protocol.handle('local', (request) => {
+  protocol.handle('local', async (request) => {
     try {
-      // Parse the incoming URL (e.g., local://media?path=C%3A%5C...)
       const url = new URL(request.url)
-
-      // Extract the actual system path
       const decodedPath = url.searchParams.get('path')
 
       if (!decodedPath) {
-        console.error('Invalid media request: No path provided')
-        return new Response(null, { status: 404 })
+        return new Response('No path provided', { status: 400 })
       }
 
-      // Convert to a native file:// URI and explicitly bypass custom handlers
-      // so Chromium can stream the file natively
-      return net.fetch(pathToFileURL(decodedPath).toString(), {
-        headers: request.headers,
-        method: request.method,
-        bypassCustomProtocolHandlers: true
-      })
+      // 1. Get file stats to know the total file size
+      const stat = await fs.stat(decodedPath)
+      const fileSize = stat.size
+
+      // 2. Parse the Range header (e.g., "bytes=32324-")
+      const rangeHeader = request.headers.get('Range')
+
+      if (rangeHeader) {
+        // --- CHUNKED STREAMING (For seeking in the timeline) ---
+        const parts = rangeHeader.replace(/bytes=/, '').split('-')
+        const start = parseInt(parts[0], 10)
+        // If an end byte is requested, use it, otherwise go to the end of the file
+        const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1
+        const chunkSize = end - start + 1
+
+        // Create a Node.js read stream for just that specific chunk
+        // @ts-ignore - Need to import createReadStream from 'fs' natively, see step 2
+        const fileStream = require('fs').createReadStream(decodedPath, { start, end })
+
+        // Convert the Node stream to a Web ReadableStream that fetch understands
+        const webStream = new ReadableStream({
+          start(controller) {
+            fileStream.on('data', (chunk: Buffer) => controller.enqueue(new Uint8Array(chunk)))
+            fileStream.on('end', () => controller.close())
+            fileStream.on('error', (err: Error) => controller.error(err))
+          },
+          cancel() {
+            fileStream.destroy()
+          }
+        })
+
+        // Return a 206 Partial Content response with the exact chunk dimensions
+        return new Response(webStream, {
+          status: 206,
+          headers: {
+            'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+            'Accept-Ranges': 'bytes',
+            'Content-Length': chunkSize.toString(),
+            'Content-Type': 'video/mp4' // Chromium is lenient here as long as it's media
+          }
+        })
+      } else {
+        // --- INITIAL LOAD (No Range header provided) ---
+        // Just stream the whole file, but still signal that we support ranges
+        // @ts-ignore
+        const fileStream = require('fs').createReadStream(decodedPath)
+
+        const webStream = new ReadableStream({
+          start(controller) {
+            fileStream.on('data', (chunk: Buffer) => controller.enqueue(new Uint8Array(chunk)))
+            fileStream.on('end', () => controller.close())
+            fileStream.on('error', (err: Error) => controller.error(err))
+          },
+          cancel() {
+            fileStream.destroy()
+          }
+        })
+
+        return new Response(webStream, {
+          status: 200,
+          headers: {
+            'Content-Length': fileSize.toString(),
+            'Accept-Ranges': 'bytes',
+            'Content-Type': 'video/mp4'
+          }
+        })
+      }
     } catch (err) {
       console.error('Local protocol error:', err)
-      return new Response(null, { status: 500 })
+      return new Response('Internal Server Error', { status: 500 })
     }
   })
 
