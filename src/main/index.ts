@@ -7,6 +7,19 @@ import { pathToFileURL } from 'url'
 
 import { dbOperations } from './lib/db'
 
+protocol.registerSchemesAsPrivileged([
+  {
+    scheme: 'local',
+    privileges: {
+      standard: true,
+      secure: true,
+      stream: true,
+      supportFetchAPI: true,
+      bypassCSP: true
+    }
+  }
+])
+
 function createWindow(): void {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -92,14 +105,29 @@ app.whenReady().then(() => {
 
   // --- BULLETPROOF OS PROTOCOL ---
   protocol.handle('local', (request) => {
-    // Extract the heavily encoded path from the URL
-    const encodedPath = request.url.slice('local://'.length)
+    try {
+      // Parse the incoming URL (e.g., local://media?path=C%3A%5C...)
+      const url = new URL(request.url)
 
-    // Decode it back to a normal Windows path (e.g. C:\Users\...)
-    const decodedPath = decodeURIComponent(encodedPath)
+      // Extract the actual system path
+      const decodedPath = url.searchParams.get('path')
 
-    // Convert it to a safe standard file:// URL so Chromium can play it
-    return net.fetch(pathToFileURL(decodedPath).toString())
+      if (!decodedPath) {
+        console.error('Invalid media request: No path provided')
+        return new Response(null, { status: 404 })
+      }
+
+      // Convert to a native file:// URI and explicitly bypass custom handlers
+      // so Chromium can stream the file natively
+      return net.fetch(pathToFileURL(decodedPath).toString(), {
+        headers: request.headers,
+        method: request.method,
+        bypassCustomProtocolHandlers: true
+      })
+    } catch (err) {
+      console.error('Local protocol error:', err)
+      return new Response(null, { status: 500 })
+    }
   })
 
   // --- LOCAL MEDIA SCANNER IPC ---
@@ -130,8 +158,8 @@ app.whenReady().then(() => {
             trackId: file,
             trackName: file.replace(/\.[^/.]+$/, ''),
             artistName: 'Local File',
-            // Safely encode the entire path so the browser doesn't destroy the C: drive letter
-            previewUrl: `local://${encodeURIComponent(fullPath)}`,
+            // CRITICAL: Dummy host 'media' + query parameter 'path'
+            previewUrl: `local://media?path=${encodeURIComponent(fullPath)}`,
             artworkUrl100: '',
             kind: file.endsWith('.mp4') || file.endsWith('.mkv') ? 'video' : 'song',
             isLocal: true
@@ -176,5 +204,3 @@ try {
 } catch (err) {
   console.log('Auto-reload disabled:', err)
 }
-
-console.log('MAIN STARTED')

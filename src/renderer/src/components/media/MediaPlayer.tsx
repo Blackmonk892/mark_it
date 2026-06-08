@@ -16,7 +16,9 @@ export function MediaPlayer() {
     return <EmptyPlayer />
   }
 
-  const isVideo = currentTrack.kind.includes('video') || currentTrack.kind.includes('movie')
+  const isVideo = currentTrack.kind
+    ? currentTrack.kind.includes('video') || currentTrack.kind.includes('movie')
+    : false
 
   return (
     <div className="flex h-full w-full flex-col relative overflow-hidden bg-gradient-to-br from-white/40 to-white/10">

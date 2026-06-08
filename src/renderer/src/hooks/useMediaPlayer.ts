@@ -15,6 +15,8 @@ export function useMediaPlayer(currentTrack: MediaTrack | null) {
 
     mediaRef.current.src = currentTrack.previewUrl
 
+    mediaRef.current.load()
+
     mediaRef.current.play().catch(console.error)
     setIsPlaying(true)
   }, [currentTrack])

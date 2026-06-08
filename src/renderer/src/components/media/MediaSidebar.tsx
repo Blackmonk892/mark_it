@@ -20,47 +20,61 @@ export function MediaSidebar() {
     searchMedia(query)
   }
 
-  const TrackItem = ({ track }: { track: MediaTrack }) => (
-    <div
-      onClick={() => playTrack(track)}
-      className={cn(
-        'group flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-all',
-        currentTrack?.trackId === track.trackId
-          ? 'bg-white/80 shadow-sm border border-slate-200/50'
-          : 'hover:bg-white/50 border border-transparent'
-      )}
-    >
-      {track.artworkUrl100 ? (
-        <img
-          src={track.artworkUrl100}
-          alt="art"
-          className="h-10 w-10 rounded-md object-cover shadow-sm"
-        />
-      ) : (
-        <div className="h-10 w-10 rounded-md bg-slate-200 flex items-center justify-center shadow-sm">
-          {track.kind === 'video' ? (
-            <FiVideo className="text-slate-400" />
-          ) : (
-            <FiMusic className="text-slate-400" />
-          )}
-        </div>
-      )}
+  // Extracted Component: Safe rendering
+  const TrackItem = ({
+    track,
+    currentTrack,
+    playTrack
+  }: {
+    track: MediaTrack
+    currentTrack: MediaTrack | null
+    playTrack: (track: MediaTrack) => void
+  }) => {
+    const isVideo = track.kind
+      ? track.kind.includes('video') || track.kind.includes('movie')
+      : false
+    return (
+      <div
+        onClick={() => playTrack(track)}
+        className={cn(
+          'group flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-all',
+          currentTrack?.trackId === track.trackId
+            ? 'bg-white/80 shadow-sm border border-slate-200/50'
+            : 'hover:bg-white/50 border border-transparent'
+        )}
+      >
+        {track.artworkUrl100 ? (
+          <img
+            src={track.artworkUrl100}
+            alt="art"
+            className="h-10 w-10 rounded-md object-cover shadow-sm"
+          />
+        ) : (
+          <div className="h-10 w-10 rounded-md bg-slate-200 flex items-center justify-center shadow-sm">
+            {isVideo ? (
+              <FiVideo className="text-slate-400" />
+            ) : (
+              <FiMusic className="text-slate-400" />
+            )}
+          </div>
+        )}
 
-      <div className="flex flex-col overflow-hidden">
-        <span className="truncate text-sm font-semibold text-slate-800">{track.trackName}</span>
-        <span className="truncate text-[10px] text-slate-500 flex items-center gap-1 font-medium">
-          {track.isLocal ? (
-            <FiHardDrive className="h-3 w-3 text-blue-400" />
-          ) : track.kind.includes('video') ? (
-            <FiVideo className="h-3 w-3 text-rose-400" />
-          ) : (
-            <FiMusic className="h-3 w-3 text-purple-400" />
-          )}
-          {track.artistName}
-        </span>
+        <div className="flex flex-col overflow-hidden">
+          <span className="truncate text-sm font-semibold text-slate-800">{track.trackName}</span>
+          <span className="truncate text-[10px] text-slate-500 flex items-center gap-1 font-medium">
+            {track.isLocal ? (
+              <FiHardDrive className="h-3 w-3 text-blue-400" />
+            ) : isVideo ? (
+              <FiVideo className="h-3 w-3 text-rose-400" />
+            ) : (
+              <FiMusic className="h-3 w-3 text-purple-400" />
+            )}
+            {track.artistName}
+          </span>
+        </div>
       </div>
-    </div>
-  )
+    )
+  }
 
   return (
     <aside className="flex h-full w-[280px] shrink-0 flex-col border-r border-white/30 bg-white/25 backdrop-blur-md">
@@ -85,7 +99,7 @@ export function MediaSidebar() {
             value={query}
             onChange={(e) => {
               setQuery(e.target.value)
-              if (e.target.value === '') searchMedia('') // Clear results if empty
+              if (e.target.value === '') searchMedia('')
             }}
             placeholder="Search online media..."
             className="w-full rounded-lg border border-white/40 bg-white/50 py-2 pl-9 pr-3 text-sm text-slate-700 placeholder-slate-400 outline-none focus:border-blue-400/50 focus:bg-white/70 transition-all shadow-sm"
@@ -101,8 +115,9 @@ export function MediaSidebar() {
               Local Library
             </h3>
             <div className="space-y-1">
+              {/* FIX 1: Pass the key correctly to the TrackItem component instance */}
               {localLibrary.map((track) => (
-                <TrackItem key={track.trackId} track={track} />
+                <TrackItem key={track.trackId} track={track} currentTrack={currentTrack} playTrack={playTrack} />
               ))}
             </div>
           </div>
@@ -123,8 +138,9 @@ export function MediaSidebar() {
               </div>
             ) : (
               <div className="space-y-1">
+                {/* FIX 1: Pass the key correctly to the TrackItem component instance */}
                 {searchResults.map((track) => (
-                  <TrackItem key={track.trackId} track={track} />
+                  <TrackItem key={track.trackId} track={track} currentTrack={currentTrack} playTrack={playTrack} />
                 ))}
               </div>
             )}

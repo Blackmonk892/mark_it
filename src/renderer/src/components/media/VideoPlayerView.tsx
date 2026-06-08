@@ -1,5 +1,5 @@
 interface Props {
-  mediaRef: React.RefObject<HTMLVideoElement>
+  mediaRef: React.RefObject<HTMLVideoElement | null>
   onTimeUpdate: () => void
   onLoadedMetadata: () => void
   onEnded: () => void
