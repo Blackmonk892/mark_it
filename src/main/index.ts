@@ -1,10 +1,9 @@
-// src/main/index.ts
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import { app, BrowserWindow, dialog, ipcMain, net, protocol, shell } from 'electron'
 import fs from 'fs/promises'
 import { join } from 'path'
 
-import { dbOperations } from './lib/db'
+import { dbOperations } from './lib/dbOperations'
 
 protocol.registerSchemesAsPrivileged([
   {
