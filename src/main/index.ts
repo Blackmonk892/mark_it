@@ -101,6 +101,24 @@ app.whenReady().then(() => {
     return dbOperations.deleteNote(id)
   })
 
+  //whiteboard ipc handlers
+
+  ipcMain.handle('db:get-all-whiteboards', async () => {
+    return dbOperations.getAllWhiteboards()
+  })
+
+  ipcMain.handle('db:create-whiteboard', async (_, title, data) => {
+    return dbOperations.createWhiteboard(title, data)
+  })
+
+  ipcMain.handle('db:update-whiteboard', async (_, id, title, data) => {
+    return dbOperations.updateWhiteboard(id, title, data)
+  })
+
+  ipcMain.handle('db:delete-whiteboard', async (_, id) => {
+    return dbOperations.deleteWhiteboard(id)
+  })
+
   // --- BULLETPROOF OS PROTOCOL ---
   protocol.handle('local', async (request) => {
     try {

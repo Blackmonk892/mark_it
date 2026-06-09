@@ -1,6 +1,6 @@
 import React, { createContext, useEffect, useRef, useState } from 'react'
 
-export type ActiveModule = 'notes' | 'media'
+export type ActiveModule = 'notes' | 'media' | 'whiteboard'
 
 export interface NotesContextType {
   notes: Note[]

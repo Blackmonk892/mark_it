@@ -6,14 +6,17 @@ import App from './App'
 import './assets/index.css'
 import { MediaProvider } from './store/MediaContext'
 import { NotesProvider } from './store/NotesContext'
+import { WhiteboardProvider } from './store/WhiteboardContext'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <MantineProvider>
       <MediaProvider>
-        <NotesProvider>
-          <App />
-        </NotesProvider>
+        <WhiteboardProvider>
+          <NotesProvider>
+            <App />
+          </NotesProvider>
+        </WhiteboardProvider>
       </MediaProvider>
     </MantineProvider>
   </StrictMode>

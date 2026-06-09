@@ -5,12 +5,18 @@ import { extractPreview, parseBlocks } from '../utils/blocknote'
 
 import { MediaSidebar } from './media/MediaSidebar'
 
+import { WhiteboardSidebar } from './whiteboard/WhiteboardSidebar'
+
 export function Sidebar() {
   const { notes, activeNote, activeModule, setActiveNote, createEmptyNote, deleteExistingNote } =
     useNotes()
 
   if (activeModule === 'media') {
     return <MediaSidebar />
+  }
+
+  if (activeModule === 'whiteboard') {
+    return <WhiteboardSidebar />
   }
 
   return (

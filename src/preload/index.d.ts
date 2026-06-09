@@ -21,6 +21,14 @@ declare global {
       closeWindow: () => void
       selectLocalMediaFolder: () => Promise<any[]>
       searchOnlineMedia: (query: string) => Promise<any[]>
+
+      getAllWhiteboards(): Promise<Whiteboard[]>
+
+      createWhiteboard(title: string, data: string): Promise<void>
+
+      updateWhiteboard(id: number, title: string, data: string): Promise<void>
+
+      deleteWhiteboard(id: number): Promise<void>
     }
   }
 }

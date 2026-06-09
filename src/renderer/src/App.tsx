@@ -1,6 +1,7 @@
 import { AppShell } from './components'
 import { Editor } from './components/Editor'
 import { MediaPlayer } from './components/media/MediaPlayer'
+import { WhiteboardCanvas } from './components/whiteboard/WhiteboardCanvas'
 import { useNotes } from './hooks/useNotes'
 
 function App() {
@@ -10,6 +11,8 @@ function App() {
     <AppShell>
       {activeModule === 'media' ? (
         <MediaPlayer />
+      ) : activeModule === 'whiteboard' ? (
+        <WhiteboardCanvas />
       ) : activeNote ? (
         <Editor />
       ) : (

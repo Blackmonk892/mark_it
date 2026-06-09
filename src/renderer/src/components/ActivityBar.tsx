@@ -1,4 +1,4 @@
-import { FiFileText, FiPlayCircle } from 'react-icons/fi'
+import { FiEdit3, FiFileText, FiPlayCircle } from 'react-icons/fi'
 import { useNotes } from '../hooks/useNotes'
 import { cn } from '../utils'
 
@@ -35,6 +35,21 @@ export function ActivityBar() {
         title="Media"
       >
         <FiPlayCircle className="h-5 w-5 transition-transform duration-200 group-hover:scale-110" />
+      </button>
+
+      <button
+        type="button"
+        onClick={() => setActiveModule('whiteboard')}
+        className={cn(
+          'group flex h-11 w-11 items-center justify-center rounded-2xl border transition-all duration-200',
+          activeModule === 'whiteboard'
+            ? 'border-white/70 bg-white/80 text-slate-900 shadow-lg shadow-white/30 scale-105'
+            : 'border-white/20 bg-white/10 text-slate-500 hover:border-white/40 hover:bg-white/30 hover:text-slate-800'
+        )}
+        aria-label="Switch to Whiteboard"
+        title="Whiteboard"
+      >
+        <FiEdit3 className="h-5 w-5 transition-transform duration-200 group-hover:scale-110" />
       </button>
     </aside>
   )

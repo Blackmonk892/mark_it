@@ -26,7 +26,17 @@ try {
     //media actions
     selectLocalMediaFolder: () => ipcRenderer.invoke('media:select-folder'),
 
-    searchOnlineMedia: (query: string) => ipcRenderer.invoke('media:search-online', query)
+    searchOnlineMedia: (query: string) => ipcRenderer.invoke('media:search-online', query),
+
+    getAllWhiteboards: () => ipcRenderer.invoke('db:get-all-whiteboards'),
+
+    createWhiteboard: (title: string, data: string) =>
+      ipcRenderer.invoke('db:create-whiteboard', title, data),
+
+    updateWhiteboard: (id: number, title: string, data: string) =>
+      ipcRenderer.invoke('db:update-whiteboard', id, title, data),
+
+    deleteWhiteboard: (id: number) => ipcRenderer.invoke('db:delete-whiteboard', id)
   })
 } catch (error) {
   console.error('Failed to expose preload APIs:', error)
